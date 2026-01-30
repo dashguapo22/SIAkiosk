@@ -129,3 +129,150 @@
     background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--cream)) 100%);
   }
 }
+
+/* Thermal Printer Receipt Styles */
+.receipt-ticket {
+  display: none;
+  width: 80mm;
+  max-width: 80mm;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  line-height: 1.2;
+  color: #000;
+  background: white;
+  padding: 8mm;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.receipt-header {
+  text-align: center;
+  margin-bottom: 6mm;
+}
+
+.receipt-title {
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 2mm 0;
+  letter-spacing: 1px;
+}
+
+.receipt-subtitle {
+  font-size: 10px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.receipt-divider {
+  border-top: 1px dashed #000;
+  margin: 4mm 0;
+  height: 0;
+}
+
+.receipt-order-info {
+  margin-bottom: 4mm;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2mm;
+  font-size: 11px;
+}
+
+.receipt-label {
+  font-weight: normal;
+}
+
+.receipt-value {
+  font-weight: bold;
+}
+
+.receipt-total {
+  margin: 6mm 0;
+}
+
+.receipt-total-amount {
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.receipt-footer {
+  text-align: center;
+  margin-top: 6mm;
+}
+
+.receipt-thank-you {
+  font-size: 11px;
+  font-weight: bold;
+  margin: 0 0 2mm 0;
+}
+
+.receipt-visit-again {
+  font-size: 10px;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.receipt-cut-line {
+  border-top: 1px solid #000;
+  margin-top: 8mm;
+  position: relative;
+}
+
+.receipt-cut-line::after {
+  content: '✂';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px;
+  background: white;
+  padding: 0 2px;
+}
+
+/* Print Styles - Hide everything except receipt */
+@media print {
+  /* Hide all body content except receipt */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Show only the receipt ticket */
+  #receipt-ticket,
+  #receipt-ticket * {
+    visibility: visible;
+  }
+
+  /* Position receipt for printing */
+  #receipt-ticket {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    height: auto;
+    margin: 0;
+    padding: 8mm;
+    box-shadow: none;
+    background: white !important;
+    color: black !important;
+    font-family: 'Courier New', monospace !important;
+  }
+
+  /* Ensure proper page setup for thermal printer */
+  @page {
+    size: 80mm auto;
+    margin: 0;
+  }
+
+  /* Hide any browser print headers/footers */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+}
