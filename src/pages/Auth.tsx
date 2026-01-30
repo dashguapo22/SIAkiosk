@@ -105,8 +105,9 @@ export default function AuthPage() {
         toast.error(error.message);
       }
     } else {
-      toast.success('Account created! You can now sign in.');
-      navigate('/pos');
+      toast.success('Account created! Please wait for admin approval to access the system.');
+      setActiveTab('login'); // Switch to login tab
+      setSignupForm({ email: '', password: '', confirmPassword: '', fullName: '' }); // Clear form
     }
   };
 

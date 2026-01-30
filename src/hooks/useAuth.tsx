@@ -95,16 +95,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: profileError as Error };
       }
 
-      // Assign cashier role by default for new signups
-      const { error: roleError } = await supabase.from('user_roles').insert({
-        user_id: data.user.id,
-        role: 'cashier',
-      });
-
-      if (roleError) {
-        console.error('Error assigning cashier role:', roleError);
-        return { error: roleError as Error };
-      }
+      // Note: No automatic role assignment - admin must approve users
     }
 
     return { error: error as Error | null };
