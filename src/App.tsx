@@ -9,6 +9,7 @@ import Kiosk from "./pages/Kiosk";
 import POS from "./pages/POS";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
+            <Route path="/admin" element={<Admin />} />
             <Route path="/" element={<Index />} />
             <Route path="/kiosk" element={<Kiosk />} />
             <Route path="/pos" element={<POS />} />

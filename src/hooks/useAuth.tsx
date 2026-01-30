@@ -85,16 +85,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!error && data.user) {
       // Create profile
-      await supabase.from('profiles').insert({
+      const { error: profileError } = await supabase.from('profiles').insert({
         user_id: data.user.id,
         full_name: fullName,
       });
 
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+        return { error: profileError as Error };
+      }
+
       // Assign cashier role by default for new signups
-      await supabase.from('user_roles').insert({
+      const { error: roleError } = await supabase.from('user_roles').insert({
         user_id: data.user.id,
         role: 'cashier',
       });
+
+      if (roleError) {
+        console.error('Error assigning cashier role:', roleError);
+        return { error: roleError as Error };
+      }
     }
 
     return { error: error as Error | null };

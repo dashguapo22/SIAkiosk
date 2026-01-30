@@ -201,3 +201,11 @@ export default function POSPage() {
     </div>
   );
 }
+
+/* SQL Code to Insert Cashier Role for User
+INSERT INTO public.user_roles (user_id, role)
+SELECT id, 'cashier'
+FROM auth.users
+WHERE email = 'elmolizano@gmail.com'
+ON CONFLICT (user_id, role) DO NOTHING;
+*/

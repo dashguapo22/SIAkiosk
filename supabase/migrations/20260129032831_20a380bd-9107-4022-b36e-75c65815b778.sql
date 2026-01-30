@@ -196,6 +196,11 @@ CREATE POLICY "Users can view their own roles"
     TO authenticated
     USING (user_id = auth.uid());
 
+CREATE POLICY "Users can insert their own roles"
+    ON public.user_roles FOR INSERT
+    TO authenticated
+    WITH CHECK (user_id = auth.uid());
+
 CREATE POLICY "Admins can manage all roles"
     ON public.user_roles FOR ALL
     TO authenticated
@@ -246,3 +251,19 @@ INSERT INTO public.menu_items (category_id, name, description, base_price, allow
     ((SELECT id FROM public.categories WHERE name = 'Tea'), 'Earl Grey', 'Classic black tea with bergamot', 3.50, true, 1),
     ((SELECT id FROM public.categories WHERE name = 'Tea'), 'Green Tea', 'Light and refreshing', 3.50, true, 2),
     ((SELECT id FROM public.categories WHERE name = 'Tea'), 'Chai Latte', 'Spiced tea with steamed milk', 4.50, true, 3);
+
+-- Insert default user role
+INSERT INTO public.user_roles (user_id, role)
+SELECT id, 'cashier'
+FROM auth.users
+WHERE email = 'your.email@example.com'
+ON CONFLICT (user_id, role) DO NOTHING;
+
+SELECT * FROM public.user_roles WHERE user_id = (SELECT id FROM auth.users WHERE email = 'your.email@example.com');
+
+SELECT id FROM auth.users WHERE email = 'your.email@example.com';
+
+SELECT table_name
+FROM information_schema.tables
+WHERE table_schema = 'public'
+ORDER BY table_name;
