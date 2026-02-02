@@ -15,7 +15,7 @@ export function WelcomeScreen({ onStartOrder }: WelcomeScreenProps) {
         </div>
         <h1 className="text-5xl md:text-6xl font-display font-bold text-primary mb-4">
           Welcome to<br />
-          <span className="text-caramel">Brew & Co.</span>
+          <span className="text-caramel">Cafe Maestro</span>
         </h1>
         <p className="text-xl text-muted-foreground max-w-md mx-auto">
           Handcrafted coffee made with love. Order your perfect drink in just a few taps.

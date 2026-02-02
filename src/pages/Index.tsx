@@ -12,7 +12,7 @@ const Index = () => {
           <Coffee className="w-12 h-12 text-primary-foreground" />
         </div>
         <h1 className="text-5xl font-display font-bold text-primary mb-2">
-          Brew & Co.
+          Cafe Maestro
         </h1>
         <p className="text-xl text-muted-foreground">
           Coffee Shop Ordering System

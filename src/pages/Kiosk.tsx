@@ -96,7 +96,7 @@ function KioskContent() {
               <div className="w-10 h-10 rounded-full gradient-coffee flex items-center justify-center">
                 <Coffee className="w-5 h-5 text-primary-foreground" />
               </div>
-              <h1 className="text-2xl font-display font-bold text-primary">Brew & Co.</h1>
+              <h1 className="text-2xl font-display font-bold text-primary">Cafe Maestro</h1>
             </div>
           </div>
         </div>
