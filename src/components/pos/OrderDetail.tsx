@@ -118,7 +118,7 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
                   {SIZE_LABELS[item.size]} • {TEMPERATURE_LABELS[item.temperature]}
                 </p>
               </div>
-              <span className="font-semibold">${Number(item.total_price).toFixed(2)}</span>
+              <span className="font-semibold">PHP{Number(item.total_price).toFixed(2)}</span>
             </div>
           ))}
         </div>
@@ -127,15 +127,11 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
         <div className="border-t border-border pt-4 mb-6 space-y-2">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
-            <span>${Number(order.subtotal).toFixed(2)}</span>
-          </div>
-          <div className="flex justify-between text-muted-foreground">
-            <span>Tax</span>
-            <span>${Number(order.tax).toFixed(2)}</span>
+            <span>PHP{Number(order.subtotal).toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-xl font-bold pt-2 border-t border-border">
             <span>Total</span>
-            <span>${Number(order.total).toFixed(2)}</span>
+            <span>PHP{Number(order.total).toFixed(2)}</span>
           </div>
         </div>
 
@@ -201,7 +197,7 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
                     {cashReceived && cashChange >= 0 && (
                       <div className="flex justify-between items-center text-lg font-bold text-success">
                         <span>Change Due:</span>
-                        <span>${cashChange.toFixed(2)}</span>
+                        <span>PHP{cashChange.toFixed(2)}</span>
                       </div>
                     )}
                     {cashReceived && cashChange < 0 && (

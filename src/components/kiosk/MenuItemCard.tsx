@@ -31,7 +31,7 @@ export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
         )}
         <div className="flex items-center justify-between">
           <span className="text-xl font-bold text-primary">
-            ${item.base_price.toFixed(2)}
+            PHP{item.base_price.toFixed(2)}
           </span>
           {item.allows_iced && (
             <span className="text-xs bg-secondary px-2 py-1 rounded-full text-muted-foreground">

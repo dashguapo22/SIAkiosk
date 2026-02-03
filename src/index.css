@@ -289,3 +289,42 @@
     margin-top: 0;
   }
 }
+/* --- POS Staff View: Compact Menu Optimization --- */
+@layer components {
+  /* This targets the container holding your coffee items */
+  .menu-grid-container {
+    @apply grid gap-3 p-4;
+    /* Forces 5-6 columns instead of 3 on large screens */
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  /* This shrinks the individual product cards */
+  .product-card-compact {
+    @apply flex flex-col items-center p-2 h-auto;
+    transition: all 0.2s ease;
+  }
+
+  /* This shrinks the cup icons significantly */
+  .product-card-compact img {
+    @apply h-16 w-auto mb-2; /* Reduces height to roughly 64px */
+  }
+
+  /* This makes the coffee names smaller so long names fit */
+  .product-card-name {
+    @apply text-sm font-semibold text-center leading-tight;
+    /* Handles long names like 'Strawberry Pistachio Latte' */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+@media print {
+  #receipt-ticket {
+    transform: translateY(0); /* Forces it to the absolute top */
+    padding-top: 2mm !important; /* Minimal top gap */
+  }
+}
+
+

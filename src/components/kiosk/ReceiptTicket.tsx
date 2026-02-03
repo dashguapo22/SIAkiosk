@@ -40,7 +40,7 @@ export function ReceiptTicket({ order }: ReceiptTicketProps) {
         <div className="receipt-row">
           <span className="receipt-label">TOTAL:</span>
           <span className="receipt-value receipt-total-amount">
-            ${Number(order.total).toFixed(2)}
+            PHP{Number(order.total).toFixed(2)}
           </span>
         </div>
       </div>

@@ -25,7 +25,7 @@ export function SalesSummary() {
   const stats = [
     {
       title: "Today's Sales",
-      value: `$${totalSales.toFixed(2)}`,
+      value: `PHP${totalSales.toFixed(2)}`,
       icon: DollarSign,
       color: 'text-success',
       bgColor: 'bg-success/10',
@@ -39,7 +39,7 @@ export function SalesSummary() {
     },
     {
       title: "Avg. Order Value",
-      value: `$${averageOrder.toFixed(2)}`,
+      value: `PHP${averageOrder.toFixed(2)}`,
       icon: TrendingUp,
       color: 'text-caramel',
       bgColor: 'bg-caramel/10',

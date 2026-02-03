@@ -24,7 +24,7 @@ export function CartSheet({ onCheckout }: CartSheetProps) {
             View Cart ({itemCount})
           </span>
           <span className="bg-primary-foreground/20 px-3 py-1 rounded-lg">
-            ${total.toFixed(2)}
+            PHP{total.toFixed(2)}
           </span>
         </Button>
       </SheetTrigger>
@@ -82,7 +82,7 @@ export function CartSheet({ onCheckout }: CartSheetProps) {
                         </button>
                       </div>
                       <span className="font-semibold">
-                        ${(item.unitPrice * item.quantity).toFixed(2)}
+                        PHP{(item.unitPrice * item.quantity).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -93,15 +93,11 @@ export function CartSheet({ onCheckout }: CartSheetProps) {
               <div className="border-t border-border pt-4 mt-4 space-y-2">
                 <div className="flex justify-between text-muted-foreground">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-muted-foreground">
-                  <span>Tax (8%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>PHP{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-xl font-bold pt-2 border-t border-border">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>PHP{total.toFixed(2)}</span>
                 </div>
 
                 <Button

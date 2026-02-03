@@ -56,7 +56,7 @@ export function CustomizeDialog({ item, open, onClose, onAddToCart }: CustomizeD
             <div>
               <p className="text-sm text-muted-foreground">{item.description}</p>
               <p className="text-lg font-semibold text-primary mt-1">
-                Starting at ${item.base_price.toFixed(2)}
+                Starting at PHP{item.base_price.toFixed(2)}
               </p>
             </div>
           </div>
@@ -79,10 +79,10 @@ export function CustomizeDialog({ item, open, onClose, onAddToCart }: CustomizeD
                   <span className="block font-medium">{SIZE_LABELS[s]}</span>
                   <span className="text-sm text-muted-foreground">
                     {SIZE_PRICES[s] === 0 
-                      ? `$${item.base_price.toFixed(2)}` 
+                      ? `PHP${item.base_price.toFixed(2)}` 
                       : SIZE_PRICES[s] > 0 
-                        ? `+$${SIZE_PRICES[s].toFixed(2)}`
-                        : `-$${Math.abs(SIZE_PRICES[s]).toFixed(2)}`
+                        ? `+PHP${SIZE_PRICES[s].toFixed(2)}`
+                        : `-PHP${Math.abs(SIZE_PRICES[s]).toFixed(2)}`
                     }
                   </span>
                 </button>
@@ -149,7 +149,7 @@ export function CustomizeDialog({ item, open, onClose, onAddToCart }: CustomizeD
           onClick={handleAddToCart}
           className="w-full touch-target h-14 text-lg font-semibold rounded-xl"
         >
-          Add to Cart - ${totalPrice.toFixed(2)}
+          Add to Cart - PHP{totalPrice.toFixed(2)}
         </Button>
       </DialogContent>
     </Dialog>

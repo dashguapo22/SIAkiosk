@@ -54,7 +54,7 @@ export function OrderConfirmation({ order, onNewOrder }: OrderConfirmationProps)
             #{order.order_number}
           </div>
           <p className="text-sm text-muted-foreground mt-4">
-            Total: <span className="font-semibold text-foreground">${Number(order.total).toFixed(2)}</span>
+            Total: <span className="font-semibold text-foreground">PHP{Number(order.total).toFixed(2)}</span>
           </p>
         </div>
 

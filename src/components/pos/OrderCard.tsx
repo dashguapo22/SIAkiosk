@@ -64,7 +64,7 @@ export function OrderCard({ order, onSelect, isSelected }: OrderCardProps) {
           )}
         </div>
         <div className="flex items-center justify-between pt-2 border-t border-border">
-          <span className="font-bold text-lg">${Number(order.total).toFixed(2)}</span>
+          <span className="font-bold text-lg">PHP{Number(order.total).toFixed(2)}</span>
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
         </div>
       </CardContent>
