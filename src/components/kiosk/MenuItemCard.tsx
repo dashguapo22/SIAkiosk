@@ -9,17 +9,17 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, onSelect }: MenuItemCardProps) {
   return (
-    <Card 
+    <Card
       className="cursor-pointer hover:shadow-lg transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] border-border bg-card overflow-hidden"
       onClick={() => onSelect(item)}
     >
       <CardContent className="p-4">
         <div className="aspect-square rounded-xl bg-secondary/50 flex items-center justify-center mb-4 overflow-hidden">
           {item.image_url ? (
-            <img 
-              src={item.image_url} 
+            <img
+              src={item.image_url}
               alt={item.name}
-              className="w-full h-full object-cover"
+              className="w-75 h-full object-cover"
             />
           ) : (
             <Coffee className="w-16 h-16 text-coffee-medium" />
