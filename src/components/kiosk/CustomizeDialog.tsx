@@ -14,7 +14,7 @@ interface CustomizeDialogProps {
 
 export function CustomizeDialog({ item, open, onClose, onAddToCart }: CustomizeDialogProps) {
   const [size, setSize] = useState<DrinkSize>('medium');
-  const [temperature, setTemperature] = useState<DrinkTemperature>('hot');
+  const [temperature, setTemperature] = useState<DrinkTemperature>('iced');
   const [quantity, setQuantity] = useState(1);
 
   if (!item) return null;
@@ -28,13 +28,13 @@ export function CustomizeDialog({ item, open, onClose, onAddToCart }: CustomizeD
     }
     // Reset state
     setSize('medium');
-    setTemperature('hot');
+    setTemperature('iced');
     setQuantity(1);
     onClose();
   };
 
   const sizes: DrinkSize[] = ['small', 'medium', 'large'];
-  const temperatures: DrinkTemperature[] = item.allows_iced ? ['hot', 'iced'] : ['hot'];
+  const temperatures: DrinkTemperature[] = item.allows_iced ? ['hot', 'iced'] : ['iced'];
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -56,7 +56,7 @@ export function CustomizeDialog({ item, open, onClose, onAddToCart }: CustomizeD
             <div>
               <p className="text-sm text-muted-foreground">{item.description}</p>
               <p className="text-lg font-semibold text-primary mt-1">
-                Starting at PHP{item.base_price.toFixed(2)}
+                Starting at PHP {item.base_price.toFixed(2)}
               </p>
             </div>
           </div>
@@ -149,7 +149,7 @@ export function CustomizeDialog({ item, open, onClose, onAddToCart }: CustomizeD
           onClick={handleAddToCart}
           className="w-full touch-target h-14 text-lg font-semibold rounded-xl"
         >
-          Add to Cart - PHP{totalPrice.toFixed(2)}
+          Add to Cart - PHP {totalPrice.toFixed(2)}
         </Button>
       </DialogContent>
     </Dialog>

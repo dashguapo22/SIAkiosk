@@ -240,3 +240,33 @@ export function useTodaysSales() {
     },
   });
 }
+export function useAllHistorySalesAndOrders() {
+  return useQuery({
+    queryKey: ['all-history-sales-orders'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('payment_status', 'paid');
+
+        if (error) throw error;
+
+        const grouped: Record<string, { orders: number; sales: number} > = {};
+
+        data.forEach((order) => {
+          const day = new Date(order.created_at).toLocaleDateString('en-PH');
+          if (!grouped[day]) grouped[day] = { orders: 0, sales: 0 };
+          grouped[day].orders += 1;
+          grouped[day].sales += Number(order.total);
+        });
+
+        return Object.entries(grouped)
+        .map(([day, { orders, sales }]) => ({
+          day,
+          orders,
+          sales,
+        }))
+        .sort((a, b) => new Date(a.day).getTime() - new Date(b.day).getTime());
+    },
+  });
+}
