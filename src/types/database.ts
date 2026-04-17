@@ -71,9 +71,9 @@ export interface CartItem {
 
 // Size price modifiers
 export const SIZE_PRICES: Record<DrinkSize, number> = {
-  small: -0.50,
+  small: -10,
   medium: 0,
-  large: 0.75,
+  large: +10,
 };
 
 export const SIZE_LABELS: Record<DrinkSize, string> = {
