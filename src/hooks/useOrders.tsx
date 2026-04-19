@@ -200,8 +200,7 @@ export function useProcessPayment() {
         .update({
           payment_method: paymentMethod,
           payment_status: 'paid',
-          status: 'completed',
-          completed_at: new Date().toISOString(),
+          status: 'in_progress',
         })
         .eq('id', orderId)
         .select()

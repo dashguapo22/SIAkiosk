@@ -78,9 +78,9 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
   ];
 
   const nextStatus: Record<OrderStatus, OrderStatus | null> = {
-    pending: 'in_progress',
+    pending: null,
     in_progress: 'ready',
-    ready: null, // Will be completed via payment
+    ready: 'completed',
     completed: null,
     cancelled: null,
   };
@@ -139,7 +139,7 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
         {order.status !== 'completed' && order.status !== 'cancelled' && (
           <div className="space-y-4">
             {/* Progress Status Button */}
-            {nextStatus[order.status] && (
+            {order.status !== 'pending' && nextStatus[order.status] && (
               <Button
                 onClick={() => handleStatusChange(nextStatus[order.status]!)}
                 disabled={updateStatus.isPending}
@@ -154,8 +154,8 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
               </Button>
             )}
 
-            {/* Payment Section (only for ready orders) */}
-            {order.status === 'ready' && order.payment_status === 'unpaid' && (
+            {/* Payment Section (only for new/pending orders) */}
+            {order.status === 'pending' && order.payment_status === 'unpaid' && (
               <div className="space-y-4 pt-4 border-t border-border">
                 <h3 className="font-semibold text-lg">Process Payment</h3>
                 
