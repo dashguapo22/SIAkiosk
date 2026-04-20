@@ -21,10 +21,11 @@ const statusColors: Record<OrderStatus, string> = {
 };
 
 export function OrderCard({ order, onSelect, isSelected }: OrderCardProps) {
-  const timeAgo = formatDistanceToNow(new Date(order.created_at), { addSuffix: true });
+  const timeAgo = formatDistanceToNow(new Date(order.created_at ?? Date.now()), { addSuffix: true });
+  const items = order.order_items ?? [];
 
   return (
-    <Card 
+    <Card
       className={cn(
         "cursor-pointer transition-all duration-200 hover:shadow-md",
         isSelected ? "ring-2 ring-primary" : ""
@@ -47,7 +48,7 @@ export function OrderCard({ order, onSelect, isSelected }: OrderCardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-1 mb-3">
-          {order.order_items.slice(0, 3).map((item) => (
+          {items.slice(0, 3).map((item) => (
             <div key={item.id} className="text-sm flex justify-between">
               <span>
                 {item.quantity}x {item.item_name}

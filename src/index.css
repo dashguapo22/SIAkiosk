@@ -120,11 +120,11 @@
   .touch-target {
     @apply min-h-[44px] min-w-[44px];
   }
-  
+
   .gradient-coffee {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--coffee-medium)) 100%);
   }
-  
+
   .gradient-cream {
     background: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--cream)) 100%);
   }
@@ -198,16 +198,47 @@
   letter-spacing: 0.5px;
 }
 
-.receipt-footer {
-  text-align: center;
-  margin-top: 6mm;
+.receipt-items {
+  margin-top: 4mm;
 }
 
-.receipt-thank-you {
-  font-size: 11px;
-  font-weight: bold;
-  margin: 0 0 2mm 0;
+.receipt-item {
+  margin-bottom: 2mm;
 }
+
+.receipt-item-main {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 11px;
+}
+
+.receipt-item-name {
+  font-weight: 600;
+}
+
+.receipt-item-price {
+  font-weight: bold;
+}
+
+.receipt-item-meta {
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.65);
+  margin-top: 1mm;
+}
+
+.receipt-qr {
+  margin: 6mm auto 0;
+  width: 72px;
+  height: 72px;
+}
+
+.receipt-qr img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 
 .receipt-visit-again {
   font-size: 10px;
@@ -234,6 +265,7 @@
 
 /* Print Styles - Hide everything except receipt */
 @media print {
+
   /* Hide all body content except receipt */
   body * {
     visibility: hidden;
@@ -245,52 +277,57 @@
     visibility: visible;
   }
 
-  /* Position receipt for printing */
-  #receipt-ticket {
+  html,
+  body {
+    width: 80mm !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+  }
+
+  body {
     display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
+  }
+
+  .receipt-print-wrapper {
+    display: block !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
     width: 80mm !important;
     max-width: 80mm !important;
-    height: auto;
-    margin: 0;
-    padding: 8mm;
-    box-shadow: none;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  #receipt-ticket {
+    display: block !important;
+    position: relative !important;
+    left: auto !important;
+    top: auto !important;
+    width: 80mm !important;
+    max-width: 80mm !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 8mm !important;
+    box-shadow: none !important;
     background: white !important;
     color: black !important;
     font-family: 'Courier New', monospace !important;
   }
 
-  /* Ensure proper page setup for thermal printer */
   @page {
     size: 80mm auto;
     margin: 0;
   }
-
-  /* Hide any browser print headers/footers */
-  html, body {
-    margin: 0 !important;
-    padding: 0 !important;
-    -webkit-print-color-adjust: exact;
-    color-adjust: exact;
-  }
 }
 
-
-/* wait lang dito */
-@media print {
-  @page {
-    margin-top: 0;
-    margin-bottom: 0;
-  }
-  body {
-    padding-top: 0;
-    margin-top: 0;
-  }
-}
 /* --- POS Staff View: Compact Menu Optimization --- */
 @layer components {
+
   /* This targets the container holding your coffee items */
   .menu-grid-container {
     @apply grid gap-3 p-4;
@@ -306,7 +343,8 @@
 
   /* This shrinks the cup icons significantly */
   .product-card-compact img {
-    @apply h-16 w-auto mb-2; /* Reduces height to roughly 64px */
+    @apply h-16 w-auto mb-2;
+    /* Reduces height to roughly 64px */
   }
 
   /* This makes the coffee names smaller so long names fit */
@@ -322,9 +360,9 @@
 
 @media print {
   #receipt-ticket {
-    transform: translateY(0); /* Forces it to the absolute top */
-    padding-top: 2mm !important; /* Minimal top gap */
+    transform: translateY(0);
+    /* Forces it to the absolute top */
+    padding-top: 2mm !important;
+    /* Minimal top gap */
   }
 }
-
-
