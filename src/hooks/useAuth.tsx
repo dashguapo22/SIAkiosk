@@ -30,6 +30,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const applyAuthState = async (nextSession: Session | null) => {
       if (!isMounted) return;
 
+      console.log('[auth] applyAuthState', {
+        path: window.location.pathname,
+        hasSession: !!nextSession,
+        userId: nextSession?.user?.id ?? null,
+        expiresAt: nextSession?.expires_at ?? null,
+      });
+
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
       setIsLoading(false);
@@ -40,6 +47,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!isMounted) return;
         setRoles(nextRoles);
         setIsRolesLoading(false);
+        console.log('[auth] rolesLoaded', {
+          path: window.location.pathname,
+          userId: nextSession.user.id,
+          roles: nextRoles,
+        });
       } else {
         setRoles([]);
         setIsRolesLoading(false);
@@ -47,7 +59,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, nextSession) => {
+      (event, nextSession) => {
+        console.log('[auth] onAuthStateChange', {
+          event,
+          path: window.location.pathname,
+          hasSession: !!nextSession,
+          userId: nextSession?.user?.id ?? null,
+          expiresAt: nextSession?.expires_at ?? null,
+        });
         void applyAuthState(nextSession);
       }
     );
@@ -68,12 +87,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return data.map(r => r.role as AppRole);
     }
 
-    console.error('Error fetching user roles:', error);
+    console.error('[auth] Error fetching user roles:', {
+      userId,
+      path: window.location.pathname,
+      error,
+    });
     return [];
   };
 
   const signIn = async (email: string, password: string) => {
+    console.log('[auth] signIn:start', {
+      email,
+      path: window.location.pathname,
+    });
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+    console.log('[auth] signIn:result', {
+      email,
+      path: window.location.pathname,
+      error: error?.message ?? null,
+    });
     return { error: error as Error | null };
   };
 
@@ -108,6 +140,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
+    console.log('[auth] signOut:start', {
+      path: window.location.pathname,
+      userId: user?.id ?? null,
+    });
     await supabase.auth.signOut();
     setRoles([]);
     setIsRolesLoading(false);
