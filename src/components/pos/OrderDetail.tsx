@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { POSReceiptTicket } from './POSReceiptTicket';
 import { OrderWithItems, OrderStatus, PaymentMethod, STATUS_LABELS, PAYMENT_METHOD_LABELS, SIZE_LABELS, TEMPERATURE_LABELS } from '@/types/database';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,9 @@ const statusColors: Record<OrderStatus, string> = {
 };
 
 export function OrderDetail({ order, onClose }: OrderDetailProps) {
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [receiptData, setReceiptData] = useState<any>(null);
+  const printAreaRef = useRef<HTMLDivElement>(null);
   const [cashReceived, setCashReceived] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
   
@@ -59,9 +63,38 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
         paymentMethod: selectedPaymentMethod 
       });
       toast.success(`Payment received for Order #${order.order_number}`);
-      setSelectedPaymentMethod(null);
-      setCashReceived('');
-      onClose();
+      // Prepare receipt data for POSReceiptTicket
+      const items = order.order_items.map((item) => ({
+        name: `${item.item_name}${item.size ? ` (${SIZE_LABELS[item.size] || ''}${item.temperature ? ', ' + TEMPERATURE_LABELS[item.temperature] : ''})` : ''}`,
+        quantity: item.quantity,
+        price: item.total_price,
+      }));
+      const cash = selectedPaymentMethod === 'cash' && cashReceived ? parseFloat(cashReceived) : order.total;
+      const change = selectedPaymentMethod === 'cash' && cashReceived ? (parseFloat(cashReceived) - Number(order.total)) : 0;
+      setReceiptData({
+        orderNumber: order.order_number,
+        employee: 'Owner', // Replace with actual employee name if available
+        pos: 'POS 1',
+        type: 'Dine in', // You may want to make this dynamic
+        items,
+        total: order.total,
+        cash,
+        change,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString(),
+      });
+      setShowReceipt(true);
+      setTimeout(() => {
+        if (printAreaRef.current) {
+          window.print();
+        }
+        setTimeout(() => {
+          setShowReceipt(false);
+          setSelectedPaymentMethod(null);
+          setCashReceived('');
+          onClose();
+        }, 2000); // Wait 2 seconds after print dialog opens
+      }, 200);
     } catch (error) {
       toast.error('Failed to process payment');
     }
@@ -86,7 +119,14 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
   };
 
   return (
-    <Card className="h-full flex flex-col">
+    <>
+      {/* Print-only area for POS receipt */}
+      {showReceipt && receiptData && (
+        <div ref={printAreaRef} className="pos-print-area">
+          <POSReceiptTicket {...receiptData} />
+        </div>
+      )}
+      <Card className="h-full flex flex-col">
       <CardHeader className="border-b border-border">
         <div className="flex items-center justify-between">
           <div>
@@ -255,5 +295,6 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
         )}
       </CardContent>
     </Card>
+    </>
   );
 }
