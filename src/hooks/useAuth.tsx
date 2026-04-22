@@ -23,14 +23,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isRolesLoading, setIsRolesLoading] = useState(false);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [debugLines, setDebugLines] = useState<string[]>([]);
 
   useEffect(() => {
     let isMounted = true;
+    const pushDebug = (label: string, details: Record<string, unknown> = {}) => {
+      const detailText = Object.entries(details)
+        .map(([key, value]) => `${key}=${String(value)}`)
+        .join(' ');
+      const line = `${new Date().toLocaleTimeString()} ${label}${detailText ? ` ${detailText}` : ''}`;
+      console.log('[auth-debug]', line);
+      setDebugLines((prev) => [...prev.slice(-7), line]);
+    };
 
     const applyAuthState = async (nextSession: Session | null) => {
       if (!isMounted) return;
 
-      console.log('[auth] applyAuthState', {
+      pushDebug('applyAuthState', {
         path: window.location.pathname,
         hasSession: !!nextSession,
         userId: nextSession?.user?.id ?? null,
@@ -47,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!isMounted) return;
         setRoles(nextRoles);
         setIsRolesLoading(false);
-        console.log('[auth] rolesLoaded', {
+        pushDebug('rolesLoaded', {
           path: window.location.pathname,
           userId: nextSession.user.id,
           roles: nextRoles,
@@ -60,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, nextSession) => {
-        console.log('[auth] onAuthStateChange', {
+        pushDebug('onAuthStateChange', {
           event,
           path: window.location.pathname,
           hasSession: !!nextSession,
@@ -87,22 +96,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return data.map(r => r.role as AppRole);
     }
 
-    console.error('[auth] Error fetching user roles:', {
-      userId,
+    pushDebug('rolesError', {
       path: window.location.pathname,
-      error,
+      userId,
+      error: error?.message ?? 'unknown',
     });
     return [];
   };
 
   const signIn = async (email: string, password: string) => {
-    console.log('[auth] signIn:start', {
-      email,
+    pushDebug('signIn:start', {
       path: window.location.pathname,
     });
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    console.log('[auth] signIn:result', {
-      email,
+    pushDebug('signIn:result', {
       path: window.location.pathname,
       error: error?.message ?? null,
     });
@@ -140,7 +147,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signOut = async () => {
-    console.log('[auth] signOut:start', {
+    pushDebug('signOut:start', {
       path: window.location.pathname,
       userId: user?.id ?? null,
     });
@@ -165,6 +172,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
     }}>
       {children}
+      <div
+        style={{
+          position: 'fixed',
+          left: 8,
+          bottom: 8,
+          zIndex: 99999,
+          maxWidth: 'calc(100vw - 16px)',
+          padding: '8px 10px',
+          background: 'rgba(0,0,0,0.82)',
+          color: '#fff',
+          fontSize: '10px',
+          lineHeight: 1.4,
+          fontFamily: 'monospace',
+          borderRadius: 8,
+          pointerEvents: 'none',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        {[
+          `path=${typeof window !== 'undefined' ? window.location.pathname : ''}`,
+          `user=${user?.id ?? 'null'} session=${session ? 'yes' : 'no'} loading=${String(isLoading)} rolesLoading=${String(isRolesLoading)}`,
+          `roles=${roles.join(',') || 'none'}`,
+          ...debugLines,
+        ].join('\n')}
+      </div>
     </AuthContext.Provider>
   );
 }
