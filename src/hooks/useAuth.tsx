@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AppRole } from '@/types/database';
@@ -23,41 +23,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isRolesLoading, setIsRolesLoading] = useState(false);
   const [roles, setRoles] = useState<AppRole[]>([]);
-  const authSyncIdRef = useRef(0);
 
   useEffect(() => {
     let isMounted = true;
 
-    const syncAuthState = async (nextSession: Session | null) => {
+    const applyAuthState = async (nextSession: Session | null) => {
       if (!isMounted) return;
 
-      const syncId = ++authSyncIdRef.current;
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
+      setIsLoading(false);
 
       if (nextSession?.user) {
         setIsRolesLoading(true);
         const nextRoles = await fetchUserRoles(nextSession.user.id);
-        if (!isMounted || syncId !== authSyncIdRef.current) return;
+        if (!isMounted) return;
         setRoles(nextRoles);
         setIsRolesLoading(false);
       } else {
         setRoles([]);
         setIsRolesLoading(false);
       }
-
-      if (isMounted && syncId === authSyncIdRef.current) {
-        setIsLoading(false);
-      }
     };
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        void syncAuthState(session);
+      (_event, nextSession) => {
+        void applyAuthState(nextSession);
       }
     );
-
-    void supabase.auth.getSession().then(({ data: { session } }) => syncAuthState(session));
 
     return () => {
       isMounted = false;
