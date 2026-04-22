@@ -7,6 +7,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  isRolesLoading: boolean;
   isAdmin: boolean;
   isCashier: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
@@ -20,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRolesLoading, setIsRolesLoading] = useState(false);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const authSyncIdRef = useRef(0);
 
@@ -32,14 +34,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const syncId = ++authSyncIdRef.current;
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
-      setIsLoading(true);
 
       if (nextSession?.user) {
+        setIsRolesLoading(true);
         const nextRoles = await fetchUserRoles(nextSession.user.id);
         if (!isMounted || syncId !== authSyncIdRef.current) return;
         setRoles(nextRoles);
+        setIsRolesLoading(false);
       } else {
         setRoles([]);
+        setIsRolesLoading(false);
       }
 
       if (isMounted && syncId === authSyncIdRef.current) {
@@ -113,6 +117,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     await supabase.auth.signOut();
     setRoles([]);
+    setIsRolesLoading(false);
   };
 
   const isAdmin = roles.includes('admin');
@@ -123,6 +128,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       session,
       isLoading,
+      isRolesLoading,
       isAdmin,
       isCashier,
       signIn,

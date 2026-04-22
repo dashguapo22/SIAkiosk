@@ -25,7 +25,7 @@ interface StaffMember {
 }
 
 export default function Admin() {
-  const { isAdmin, isLoading: authLoading, user } = useAuth();
+  const { isAdmin, isLoading: authLoading, isRolesLoading, user } = useAuth();
   const [pendingUsers, setPendingUsers] = useState<PendingUser[]>([]);
   const [staffMembers, setStaffMembers] = useState<StaffMember[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,6 +73,14 @@ export default function Admin() {
   // Redirect if not logged in
   if (!authLoading && !user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  if (user && isRolesLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   // Redirect if not admin

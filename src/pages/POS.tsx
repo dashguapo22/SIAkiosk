@@ -13,7 +13,7 @@ import { Coffee, LogOut, RefreshCw, Loader2, ClipboardList, DollarSign, Settings
 import { cn } from '@/lib/utils';
 
 export default function POSPage() {
-  const { user, isLoading: authLoading, isCashier, isAdmin, signOut } = useAuth();
+  const { user, isLoading: authLoading, isRolesLoading, isCashier, isAdmin, signOut } = useAuth();
   const { data: orders, isLoading: ordersLoading, refetch } = useActiveOrders();
   const [selectedOrder, setSelectedOrder] = useState<OrderWithItems | null>(null);
   const [activeTab, setActiveTab] = useState('orders');
@@ -22,6 +22,14 @@ export default function POSPage() {
   // Redirect to auth if not logged in
   if (!authLoading && !user) {
     return <Navigate to="/auth" replace />;
+  }
+
+  if (user && isRolesLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
   }
 
   // Check for cashier access
