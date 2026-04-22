@@ -24,17 +24,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isRolesLoading, setIsRolesLoading] = useState(false);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [debugLines, setDebugLines] = useState<string[]>([]);
+  const pushDebug = (label: string, details: Record<string, unknown> = {}) => {
+    const detailText = Object.entries(details)
+      .map(([key, value]) => `${key}=${String(value)}`)
+      .join(' ');
+    const line = `${new Date().toLocaleTimeString()} ${label}${detailText ? ` ${detailText}` : ''}`;
+    console.log('[auth-debug]', line);
+    setDebugLines((prev) => [...prev.slice(-7), line]);
+  };
 
   useEffect(() => {
     let isMounted = true;
-    const pushDebug = (label: string, details: Record<string, unknown> = {}) => {
-      const detailText = Object.entries(details)
-        .map(([key, value]) => `${key}=${String(value)}`)
-        .join(' ');
-      const line = `${new Date().toLocaleTimeString()} ${label}${detailText ? ` ${detailText}` : ''}`;
-      console.log('[auth-debug]', line);
-      setDebugLines((prev) => [...prev.slice(-7), line]);
-    };
 
     const applyAuthState = async (nextSession: Session | null) => {
       if (!isMounted) return;

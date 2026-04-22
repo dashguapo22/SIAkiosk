@@ -61,17 +61,23 @@ export default function AuthPage() {
     }
 
     setIsSubmitting(true);
-    const { error } = await signIn(loginForm.email, loginForm.password);
-    setIsSubmitting(false);
+    try {
+      const { error } = await signIn(loginForm.email, loginForm.password);
 
-    if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        toast.error('Invalid email or password');
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error('Invalid email or password');
+        } else {
+          toast.error(error.message);
+        }
       } else {
-        toast.error(error.message);
+        toast.success('Welcome back!');
       }
-    } else {
-      toast.success('Welcome back!');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unexpected sign in error';
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
