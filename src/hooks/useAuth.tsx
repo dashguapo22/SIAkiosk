@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { AppRole } from '@/types/database';
@@ -21,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const authSyncIdRef = useRef(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -28,17 +29,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const syncAuthState = async (nextSession: Session | null) => {
       if (!isMounted) return;
 
+      const syncId = ++authSyncIdRef.current;
       setSession(nextSession);
       setUser(nextSession?.user ?? null);
       setIsLoading(true);
 
       if (nextSession?.user) {
-        await fetchUserRoles(nextSession.user.id);
+        const nextRoles = await fetchUserRoles(nextSession.user.id);
+        if (!isMounted || syncId !== authSyncIdRef.current) return;
+        setRoles(nextRoles);
       } else {
         setRoles([]);
       }
 
-      if (isMounted) {
+      if (isMounted && syncId === authSyncIdRef.current) {
         setIsLoading(false);
       }
     };
@@ -57,19 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  const fetchUserRoles = async (userId: string) => {
+  const fetchUserRoles = async (userId: string): Promise<AppRole[]> => {
     const { data, error } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId);
     
     if (!error && data) {
-      setRoles(data.map(r => r.role as AppRole));
-      return;
+      return data.map(r => r.role as AppRole);
     }
 
     console.error('Error fetching user roles:', error);
-    setRoles([]);
+    return [];
   };
 
   const signIn = async (email: string, password: string) => {
