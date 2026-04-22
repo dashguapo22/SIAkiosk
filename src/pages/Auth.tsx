@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,7 +24,6 @@ const signupSchema = loginSchema.extend({
 });
 
 export default function AuthPage() {
-  const navigate = useNavigate();
   const { signIn, signUp, user, isLoading: authLoading } = useAuth();
   
   const [activeTab, setActiveTab] = useState('login');
@@ -42,8 +41,7 @@ export default function AuthPage() {
 
   // Redirect if already logged in
   if (!authLoading && user) {
-    navigate('/pos');
-    return null;
+    return <Navigate to="/pos" replace />;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -74,7 +72,6 @@ export default function AuthPage() {
       }
     } else {
       toast.success('Welcome back!');
-      navigate('/pos');
     }
   };
 
