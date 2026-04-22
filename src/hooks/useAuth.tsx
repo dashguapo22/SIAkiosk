@@ -23,14 +23,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isRolesLoading, setIsRolesLoading] = useState(false);
   const [roles, setRoles] = useState<AppRole[]>([]);
-  const [debugLines, setDebugLines] = useState<string[]>([]);
   const pushDebug = (label: string, details: Record<string, unknown> = {}) => {
     const detailText = Object.entries(details)
       .map(([key, value]) => `${key}=${String(value)}`)
       .join(' ');
     const line = `${new Date().toLocaleTimeString()} ${label}${detailText ? ` ${detailText}` : ''}`;
     console.log('[auth-debug]', line);
-    setDebugLines((prev) => [...prev.slice(-7), line]);
   };
 
   useEffect(() => {
@@ -172,31 +170,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signOut,
     }}>
       {children}
-      <div
-        style={{
-          position: 'fixed',
-          left: 8,
-          bottom: 8,
-          zIndex: 99999,
-          maxWidth: 'calc(100vw - 16px)',
-          padding: '8px 10px',
-          background: 'rgba(0,0,0,0.82)',
-          color: '#fff',
-          fontSize: '10px',
-          lineHeight: 1.4,
-          fontFamily: 'monospace',
-          borderRadius: 8,
-          pointerEvents: 'none',
-          whiteSpace: 'pre-wrap',
-        }}
-      >
-        {[
-          `path=${typeof window !== 'undefined' ? window.location.pathname : ''}`,
-          `user=${user?.id ?? 'null'} session=${session ? 'yes' : 'no'} loading=${String(isLoading)} rolesLoading=${String(isRolesLoading)}`,
-          `roles=${roles.join(',') || 'none'}`,
-          ...debugLines,
-        ].join('\n')}
-      </div>
     </AuthContext.Provider>
   );
 }
