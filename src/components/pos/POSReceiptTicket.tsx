@@ -36,7 +36,25 @@ export const POSReceiptTicket: React.FC<POSReceiptProps> = ({
   const currentTime = time || new Date().toLocaleTimeString();
 
   return (
-    <div id="pos-receipt-ticket" style={{ width: 260, fontFamily: 'monospace', fontSize: 13, padding: 8 }}>
+    <div
+      id="pos-receipt-ticket"
+      style={{
+        width: 260,
+        fontFamily: 'monospace',
+        fontSize: 13,
+        padding: 8,
+        margin: 0,
+        boxSizing: 'border-box',
+        display: 'block',
+        position: 'static',
+        minHeight: 0,
+        height: 'auto',
+        maxHeight: 'none',
+        verticalAlign: 'top',
+        background: '#fff',
+        color: '#000',
+      }}
+    >
       <div style={{ textAlign: 'center', fontWeight: 'bold', fontSize: 15, letterSpacing: 1 }}>Cafe Maestro</div>
       <div style={{ borderBottom: '1px dashed #000', margin: '4px 0' }} />
       <div style={{ fontSize: 11 }}>
@@ -47,31 +65,35 @@ export const POSReceiptTicket: React.FC<POSReceiptProps> = ({
       </div>
       <div style={{ borderBottom: '1px dashed #000', margin: '4px 0' }} />
       <div>
-        {items.map((item, idx) => (
-          <div key={idx} style={{ marginBottom: 2 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>{item.name}</span>
-              <span>₱{item.price.toFixed(2)}</span>
+        {items.map((item, idx) => {
+          const unitPrice = item.quantity > 0 ? item.price / item.quantity : item.price;
+
+          return (
+            <div key={idx} style={{ marginBottom: 2 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>{item.name}</span>
+                <span>PHP{item.price.toFixed(2)}</span>
+              </div>
+              <div style={{ fontSize: 11, color: '#444', marginLeft: 4 }}>
+                {item.quantity} x PHP{unitPrice.toFixed(2)}
+                {item.notes && <span><br />{item.notes}</span>}
+              </div>
             </div>
-            <div style={{ fontSize: 11, color: '#444', marginLeft: 4 }}>
-              1 x ₱{item.price.toFixed(2)}
-              {item.notes && <span>\n{item.notes}</span>}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div style={{ borderBottom: '1px dashed #000', margin: '4px 0' }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
         <span>Total</span>
-        <span>₱{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+        <span>PHP{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
         <span>Cash</span>
-        <span>₱{cash.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+        <span>PHP{cash.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
       </div>
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
         <span>Change</span>
-        <span>₱{change.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
+        <span>PHP{change.toLocaleString(undefined, { minimumFractionDigits: 2 })}</span>
       </div>
       <div style={{ borderBottom: '1px dashed #000', margin: '4px 0' }} />
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, marginTop: 4 }}>

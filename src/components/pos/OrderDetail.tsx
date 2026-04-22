@@ -1,9 +1,6 @@
-<<<<<<< HEAD
-import { useState, useRef } from 'react';
+import { useState, useEffect, type ComponentProps } from 'react';
+import './pos-receipt-print.css';
 import { POSReceiptTicket } from './POSReceiptTicket';
-=======
-import { useEffect, useState } from 'react';
->>>>>>> 59a7110e2dbc1a95acbfbce2dc6b07f03f225148
 import { OrderWithItems, OrderStatus, PaymentMethod, STATUS_LABELS, PAYMENT_METHOD_LABELS, SIZE_LABELS, TEMPERATURE_LABELS } from '@/types/database';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useUpdateOrderStatus, useProcessPayment } from '@/hooks/useOrders';
 import { Banknote, CreditCard, Globe, ArrowRight, Check, X, Loader2 } from 'lucide-react';
-import { ReceiptTicket } from '@/components/kiosk/ReceiptTicket';
+import { useAuth } from '@/hooks/useAuth';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -30,97 +27,17 @@ const statusColors: Record<OrderStatus, string> = {
 };
 
 export function OrderDetail({ order, onClose }: OrderDetailProps) {
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [receiptData, setReceiptData] = useState<any>(null);
-  const printAreaRef = useRef<HTMLDivElement>(null);
   const [cashReceived, setCashReceived] = useState('');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [receiptPrintData, setReceiptPrintData] = useState<{
-    paymentMethod: PaymentMethod;
-    cashReceived?: number;
-    changeDue?: number;
-  } | null>(null);
+  const [posReceiptData, setPosReceiptData] = useState<ComponentProps<typeof POSReceiptTicket> | null>(null);
 
+  const { user } = useAuth();
   const updateStatus = useUpdateOrderStatus();
   const processPayment = useProcessPayment();
-
-<<<<<<< HEAD
-  if (!order) {
-    return (
-      <Card className="h-full flex items-center justify-center">
-        <p className="text-muted-foreground">Select an order to view details</p>
-      </Card>
-    );
-  }
-
-  const handleStatusChange = async (newStatus: OrderStatus) => {
-    try {
-      await updateStatus.mutateAsync({ orderId: order.id, status: newStatus });
-      toast.success(`Order #${order.order_number} updated to ${STATUS_LABELS[newStatus]}`);
-    } catch (error) {
-      toast.error('Failed to update order status');
-    }
-  };
-
-  const handlePayment = async () => {
-    if (!selectedPaymentMethod) {
-      toast.error('Please select a payment method');
-      return;
-    }
-
-    try {
-      await processPayment.mutateAsync({ 
-        orderId: order.id, 
-        paymentMethod: selectedPaymentMethod 
-      });
-      toast.success(`Payment received for Order #${order.order_number}`);
-      // Prepare receipt data for POSReceiptTicket
-      const items = order.order_items.map((item) => ({
-        name: `${item.item_name}${item.size ? ` (${SIZE_LABELS[item.size] || ''}${item.temperature ? ', ' + TEMPERATURE_LABELS[item.temperature] : ''})` : ''}`,
-        quantity: item.quantity,
-        price: item.total_price,
-      }));
-      const cash = selectedPaymentMethod === 'cash' && cashReceived ? parseFloat(cashReceived) : order.total;
-      const change = selectedPaymentMethod === 'cash' && cashReceived ? (parseFloat(cashReceived) - Number(order.total)) : 0;
-      setReceiptData({
-        orderNumber: order.order_number,
-        employee: 'Owner', // Replace with actual employee name if available
-        pos: 'POS 1',
-        type: 'Dine in', // You may want to make this dynamic
-        items,
-        total: order.total,
-        cash,
-        change,
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString(),
-      });
-      setShowReceipt(true);
-      setTimeout(() => {
-        if (printAreaRef.current) {
-          window.print();
-        }
-        setTimeout(() => {
-          setShowReceipt(false);
-          setSelectedPaymentMethod(null);
-          setCashReceived('');
-          onClose();
-        }, 2000); // Wait 2 seconds after print dialog opens
-      }, 200);
-    } catch (error) {
-      toast.error('Failed to process payment');
-    }
-  };
+  const orderTotal = Number(order?.total ?? 0);
 
   const cashChange = selectedPaymentMethod === 'cash' && cashReceived 
-    ? parseFloat(cashReceived) - Number(order.total)
-=======
-  const orderId = order?.id ?? null;
-  const items = order?.order_items ?? [];
-  const totalAmount = Number(order?.total ?? 0);
-  const subtotalAmount = Number(order?.subtotal ?? totalAmount);
-  const cashChange = selectedPaymentMethod === 'cash' && cashReceived
-    ? parseFloat(cashReceived) - Number(order?.total ?? 0)
->>>>>>> 59a7110e2dbc1a95acbfbce2dc6b07f03f225148
+    ? parseFloat(cashReceived) - orderTotal
     : 0;
 
   const paymentMethods: { method: PaymentMethod; icon: typeof Banknote; label: string }[] = [
@@ -137,29 +54,35 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
     cancelled: null,
   };
 
-  useEffect(() => {
-    if (!orderId) return;
 
+  useEffect(() => {
     setSelectedPaymentMethod(null);
     setCashReceived('');
-    setReceiptPrintData(null);
-  }, [orderId]);
+    setPosReceiptData(null);
+  }, [order?.id]);
 
   useEffect(() => {
-    if (!receiptPrintData) return;
+    if (!posReceiptData) return;
+
+    const handleAfterPrint = () => {
+      setPosReceiptData(null);
+      onClose();
+    };
 
     const timer = window.setTimeout(() => {
       window.print();
-      setReceiptPrintData(null);
-      onClose();
     }, 500);
 
-    return () => window.clearTimeout(timer);
-  }, [receiptPrintData, onClose]);
+    window.addEventListener('afterprint', handleAfterPrint);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, [posReceiptData, onClose]);
 
   const handleStatusChange = async (newStatus: OrderStatus) => {
     if (!order) return;
-
     try {
       await updateStatus.mutateAsync({ orderId: order.id, status: newStatus });
       toast.success(`Order #${order.order_number} updated to ${STATUS_LABELS[newStatus]}`);
@@ -173,20 +96,27 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
       toast.error('Please select a payment method');
       return;
     }
-
     const parsedCash = selectedPaymentMethod === 'cash' && cashReceived ? parseFloat(cashReceived) : undefined;
-
     try {
       await processPayment.mutateAsync({
         orderId: order.id,
         paymentMethod: selectedPaymentMethod,
       });
-
       toast.success(`Payment received for Order #${order.order_number}`);
-      setReceiptPrintData({
-        paymentMethod: selectedPaymentMethod,
-        cashReceived: parsedCash,
-        changeDue: parsedCash !== undefined ? parsedCash - Number(order.total) : undefined,
+      setPosReceiptData({
+        orderNumber: order.order_number,
+        employee: user?.email ?? 'Cashier',
+        pos: 'POS-1',
+        type: 'Take out',
+        items: order.order_items.map((item) => ({
+          name: item.item_name,
+          quantity: item.quantity,
+          price: Number(item.total_price),
+          notes: `${SIZE_LABELS[item.size] ?? item.size} / ${TEMPERATURE_LABELS[item.temperature] ?? item.temperature}`,
+        })),
+        total: orderTotal,
+        cash: parsedCash ?? orderTotal,
+        change: parsedCash !== undefined ? parsedCash - orderTotal : 0,
       });
       setSelectedPaymentMethod(null);
       setCashReceived('');
@@ -205,10 +135,9 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
 
   return (
     <>
-      {/* Print-only area for POS receipt */}
-      {showReceipt && receiptData && (
-        <div ref={printAreaRef} className="pos-print-area">
-          <POSReceiptTicket {...receiptData} />
+      {posReceiptData && (
+        <div className="pos-print-area">
+          <POSReceiptTicket {...posReceiptData} />
         </div>
       )}
       <Card className="h-full flex flex-col">
@@ -228,19 +157,10 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
         </div>
       </CardHeader>
 
-      <div className="receipt-print-wrapper">
-        <ReceiptTicket
-          order={order}
-          paymentMethod={receiptPrintData?.paymentMethod}
-          cashReceived={receiptPrintData?.cashReceived}
-          changeDue={receiptPrintData?.changeDue}
-        />
-      </div>
-
       <CardContent className="flex-1 overflow-y-auto py-4">
         <div className="space-y-3 mb-6">
           <h3 className="font-semibold text-lg">Order Items</h3>
-          {items.map((item) => (
+          {order.order_items.map((item) => (
             <div key={item.id} className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
               <div>
                 <p className="font-medium">{item.quantity}x {item.item_name}</p>
@@ -256,11 +176,11 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
         <div className="border-t border-border pt-4 mb-6 space-y-2">
           <div className="flex justify-between text-muted-foreground">
             <span>Subtotal</span>
-            <span>PHP{subtotalAmount.toFixed(2)}</span>
+            <span>PHP{order.subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-xl font-bold pt-2 border-t border-border">
             <span>Total</span>
-            <span>PHP{totalAmount.toFixed(2)}</span>
+            <span>PHP{order.total.toFixed(2)}</span>
           </div>
         </div>
 
