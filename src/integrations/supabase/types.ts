@@ -150,11 +150,18 @@ export type Database = {
       }
       orders: {
         Row: {
+          cashier_name: string | null
+          cashier_user_id: string | null
           completed_at: string | null
           created_at: string
           id: string
           notes: string | null
           order_number: number
+          paymongo_checkout_session_id: string | null
+          paymongo_payment_id: string | null
+          paymongo_payment_intent_id: string | null
+          paymongo_reference_number: string | null
+          paid_at: string | null
           payment_method: Database["public"]["Enums"]["payment_method"] | null
           payment_status: Database["public"]["Enums"]["payment_status"]
           status: Database["public"]["Enums"]["order_status"]
@@ -164,11 +171,18 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cashier_name?: string | null
+          cashier_user_id?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
           notes?: string | null
           order_number?: number
+          paymongo_checkout_session_id?: string | null
+          paymongo_payment_id?: string | null
+          paymongo_payment_intent_id?: string | null
+          paymongo_reference_number?: string | null
+          paid_at?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           status?: Database["public"]["Enums"]["order_status"]
@@ -178,11 +192,18 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cashier_name?: string | null
+          cashier_user_id?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
           notes?: string | null
           order_number?: number
+          paymongo_checkout_session_id?: string | null
+          paymongo_payment_id?: string | null
+          paymongo_payment_intent_id?: string | null
+          paymongo_reference_number?: string | null
+          paid_at?: string | null
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
           payment_status?: Database["public"]["Enums"]["payment_status"]
           status?: Database["public"]["Enums"]["order_status"]

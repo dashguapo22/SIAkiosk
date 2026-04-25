@@ -10,6 +10,7 @@ import POS from "./pages/POS";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
+import PaymentReturn from "./pages/PaymentReturn";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/admin" element={<Admin />} />
             <Route path="/" element={<Index />} />
             <Route path="/kiosk" element={<Kiosk />} />
+            <Route path="/payment-return" element={<PaymentReturn />} />
             <Route path="/pos" element={<POS />} />
             <Route path="/auth" element={<Auth />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -63,7 +63,7 @@ export default function Admin() {
               role: userRole?.role || 'unknown'
             };
           });
-        setStaffMembers(staffMembers);
+        setStaffMembers(staff as StaffMember[]);
       }
     }
     

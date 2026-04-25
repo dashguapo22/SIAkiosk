@@ -7,9 +7,14 @@ import { ReceiptTicket } from './ReceiptTicket';
 interface OrderConfirmationProps {
   order: Order;
   onNewOrder: () => void;
+  paymentMode?: 'counter' | 'online';
 }
 
-export function OrderConfirmation({ order, onNewOrder }: OrderConfirmationProps) {
+export function OrderConfirmation({
+  order,
+  onNewOrder,
+  paymentMode = 'counter',
+}: OrderConfirmationProps) {
   // Automatically print receipt when component mounts
   useEffect(() => {
     const printReceipt = () => {
@@ -38,11 +43,13 @@ export function OrderConfirmation({ order, onNewOrder }: OrderConfirmationProps)
         </div>
 
         <h1 className="text-4xl font-display font-bold text-primary mb-4">
-          Order Placed!
+          {paymentMode === 'online' ? 'Payment Confirmed!' : 'Order Placed!'}
         </h1>
 
         <p className="text-lg text-muted-foreground mb-8">
-          Your order has been sent to our baristas. Please proceed to the counter for payment.
+          {paymentMode === 'online'
+            ? 'Your payment was received successfully. Your order has been sent to our baristas.'
+            : 'Your order has been sent to our baristas. Please proceed to the counter for payment.'}
         </p>
 
         {/* Order Number */}
@@ -61,7 +68,11 @@ export function OrderConfirmation({ order, onNewOrder }: OrderConfirmationProps)
         {/* Instructions */}
         <div className="flex items-center justify-center gap-3 text-muted-foreground mb-6">
           <Coffee className="w-5 h-5" />
-          <span>Please tell the cashier your order number</span>
+          <span>
+            {paymentMode === 'online'
+              ? 'Please keep your order number ready for pickup.'
+              : 'Please tell the cashier your order number'}
+          </span>
         </div>
 
         {/* Print Receipt Button */}

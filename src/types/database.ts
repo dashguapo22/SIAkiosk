@@ -35,6 +35,12 @@ export interface Order {
   status: OrderStatus;
   payment_method: PaymentMethod | null;
   payment_status: PaymentStatus;
+  cashier_user_id: string | null;
+  cashier_name: string | null;
+  paymongo_checkout_session_id: string | null;
+  paymongo_payment_intent_id: string | null;
+  paymongo_payment_id: string | null;
+  paymongo_reference_number: string | null;
   subtotal: number;
   tax: number;
   total: number;
@@ -42,6 +48,7 @@ export interface Order {
   created_at: string;
   updated_at: string;
   completed_at: string | null;
+  paid_at: string | null;
 }
 
 export interface OrderItem {
@@ -59,6 +66,14 @@ export interface OrderItem {
 
 export interface OrderWithItems extends Order {
   order_items: OrderItem[];
+}
+
+export interface UserProfile {
+  id: string;
+  user_id: string;
+  full_name: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CartItem {

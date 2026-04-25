@@ -1,11 +1,13 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { AppRole } from '@/types/database';
+import { AppRole, UserProfile } from '@/types/database';
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
+  profile: UserProfile | null;
+  displayName: string;
   isLoading: boolean;
   isRolesLoading: boolean;
   isAdmin: boolean;
@@ -20,6 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isRolesLoading, setIsRolesLoading] = useState(false);
   const [roles, setRoles] = useState<AppRole[]>([]);
@@ -50,17 +53,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (nextSession?.user) {
         setIsRolesLoading(true);
-        const nextRoles = await fetchUserRoles(nextSession.user.id);
+        const [nextRoles, nextProfile] = await Promise.all([
+          fetchUserRoles(nextSession.user.id),
+          fetchUserProfile(nextSession.user.id),
+        ]);
         if (!isMounted) return;
         setRoles(nextRoles);
+        setProfile(nextProfile);
         setIsRolesLoading(false);
         pushDebug('rolesLoaded', {
           path: window.location.pathname,
           userId: nextSession.user.id,
           roles: nextRoles,
+          profileName: nextProfile?.full_name ?? null,
         });
       } else {
         setRoles([]);
+        setProfile(null);
         setIsRolesLoading(false);
       }
     };
@@ -100,6 +109,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       error: error?.message ?? 'unknown',
     });
     return [];
+  };
+
+  const fetchUserProfile = async (userId: string): Promise<UserProfile | null> => {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+
+    if (!error) {
+      return (data as UserProfile | null) ?? null;
+    }
+
+    pushDebug('profileError', {
+      path: window.location.pathname,
+      userId,
+      error: error.message,
+    });
+    return null;
   };
 
   const signIn = async (email: string, password: string) => {
@@ -151,16 +179,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
     await supabase.auth.signOut();
     setRoles([]);
+    setProfile(null);
     setIsRolesLoading(false);
   };
 
   const isAdmin = roles.includes('admin');
   const isCashier = roles.includes('cashier') || isAdmin;
+  const displayName =
+    profile?.full_name?.trim() ||
+    user?.user_metadata?.full_name ||
+    user?.email?.split('@')[0] ||
+    'Cashier';
 
   return (
     <AuthContext.Provider value={{
       user,
       session,
+      profile,
+      displayName,
       isLoading,
       isRolesLoading,
       isAdmin,

@@ -46,6 +46,7 @@ function KioskContent() {
     try {
       const order = await createOrder.mutateAsync({
         cartItems: items,
+        paymentMethod: null,
         subtotal,
         tax,
         total,
