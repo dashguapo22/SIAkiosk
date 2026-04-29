@@ -279,7 +279,93 @@ export function useProcessPayment() {
     },
   });
 }
+export function useDailySummary(date?: string) {
+  return useQuery({
+    queryKey: ['daily-summary', date],
+    queryFn: async () => {
+      const targetDate = date ?? new Date().toLocaleDateString('en-CA', {
+        timeZone: 'Asia/Manila'
+      });
 
+      const startOfDay = new Date(`${targetDate}T00:00:00+08:00`);
+      const endOfDay = new Date(`${targetDate}T23:59:59+08:00`);
+
+      // ✅ Add these logs
+      console.log('Target date:', targetDate);
+      console.log('Start:', startOfDay.toISOString());
+      console.log('End:', endOfDay.toISOString());
+
+      const { data: orders, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('payment_status', 'paid')
+        .gte('created_at', startOfDay.toISOString())
+        .lte('created_at', endOfDay.toISOString());
+
+      // ✅ Add these logs
+      console.log('Orders found:', orders?.length);
+      console.log('Error:', error);
+      console.log('Orders:', orders);
+
+      if (error) throw error;
+      if (!orders?.length) return null;
+
+      const orderIds = orders.map((o) => o.id);
+
+      const { data: items, error: itemsError } = await supabase
+        .from('order_items')
+        .select('item_name, quantity, total_price')
+        .in('order_id', orderIds);
+
+      console.log('Items found:', items?.length);
+      console.log('Items error:', itemsError);
+
+      if (itemsError) throw itemsError;
+
+      const productMap: Record<string, {
+        item_name: string;
+        total_quantity: number;
+        total_revenue: number;
+      }> = {};
+
+      items.forEach((item) => {
+        if (!productMap[item.item_name]) {
+          productMap[item.item_name] = {
+            item_name: item.item_name,
+            total_quantity: 0,
+            total_revenue: 0,
+          };
+        }
+        productMap[item.item_name].total_quantity += item.quantity;
+        productMap[item.item_name].total_revenue += Number(item.total_price);
+      });
+
+      const products = Object.values(productMap)
+        .sort((a, b) => b.total_quantity - a.total_quantity);
+
+      const totalSales = orders.reduce((sum, o) => sum + Number(o.total), 0);
+      const totalOrders = orders.length;
+      const totalItems = items.reduce((sum, i) => sum + i.quantity, 0);
+
+      const paymentBreakdown: Record<string, number> = {};
+      orders.forEach((order) => {
+        const method = order.payment_method ?? 'unknown';
+        paymentBreakdown[method] =
+          (paymentBreakdown[method] || 0) + Number(order.total);
+      });
+
+      return {
+        date: targetDate,
+        totalSales,
+        totalOrders,
+        totalItems,
+        products,
+        paymentBreakdown,
+        orders,
+      };
+    },
+  });
+}
 export function useTodaysSales() {
   return useQuery({
     queryKey: ['todays-sales'],

@@ -1,0 +1,209 @@
+/* ─── Receipt Root ─────────────────────────────────────────── */
+.receipt-root {
+  display: none; /* Hidden on screen — shown only during print */
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  color: #111;
+}
+
+/* ─── Print Styles ─────────────────────────────────────────── */
+@media print {
+  /* Make everything on the page invisible but keep layout intact */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Receipt covers the entire page with a solid white background */
+  .receipt-root {
+    visibility: visible !important;
+    display: flex !important;
+    position: fixed;
+    inset: 0;
+    justify-content: center;
+    align-items: flex-start;
+    background: #fff !important;
+    z-index: 99999;
+    padding: 0;
+  }
+
+  /* Make all receipt children visible */
+  .receipt-root * {
+    visibility: visible !important;
+  }
+}
+
+/* ─── Paper ─────────────────────────────────────────────────── */
+.receipt-paper {
+  width: 290px;
+  background: #fff;
+  padding: 0;
+}
+
+/* ─── Serrated Edge ─────────────────────────────────────────── */
+.receipt-serrated {
+  height: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    #fff 0,
+    #fff 5px,
+    #e5e5e5 5px,
+    #e5e5e5 10px
+  );
+  margin: 0 -1px;
+}
+
+/* ─── Inner Padding ─────────────────────────────────────────── */
+.receipt-inner {
+  padding: 16px 14px;
+}
+
+/* ─── Utilities ─────────────────────────────────────────────── */
+.receipt-center {
+  text-align: center;
+}
+
+/* ─── Store Header ──────────────────────────────────────────── */
+.receipt-store-name {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.receipt-store-sub {
+  font-size: 10px;
+  color: #555;
+  margin-top: 2px;
+}
+
+/* ─── Divider ───────────────────────────────────────────────── */
+.receipt-divider {
+  border: none;
+  border-top: 1px dashed #aaa;
+  margin: 9px 0;
+}
+
+/* ─── Meta Rows ─────────────────────────────────────────────── */
+.receipt-meta-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 1.5px 0;
+  font-size: 10px;
+}
+
+.receipt-meta-label {
+  color: #555;
+}
+
+/* ─── Stats ─────────────────────────────────────────────────── */
+.receipt-stats {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  margin: 6px 0;
+}
+
+.receipt-stat-val {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.receipt-stat-lbl {
+  font-size: 9px;
+  color: #555;
+}
+
+/* ─── Section Title ─────────────────────────────────────────── */
+.receipt-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+/* ─── Item Rows ─────────────────────────────────────────────── */
+.receipt-item-row {
+  display: flex;
+  align-items: baseline;
+  padding: 2px 0;
+  font-size: 10.5px;
+}
+
+.receipt-item-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-right: 6px;
+}
+
+.receipt-item-badge {
+  background: #111;
+  color: #fff;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-right: 4px;
+}
+
+.receipt-item-qty {
+  min-width: 28px;
+  text-align: right;
+  color: #444;
+}
+
+.receipt-item-rev {
+  min-width: 74px;
+  text-align: right;
+  font-weight: 600;
+}
+
+/* ─── Total Row ─────────────────────────────────────────────── */
+.receipt-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 12.5px;
+  padding: 3px 0;
+}
+
+/* ─── Payment Breakdown ─────────────────────────────────────── */
+.receipt-payment-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.receipt-payment-box {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px 7px;
+}
+
+.receipt-payment-method {
+  font-size: 9px;
+  color: #555;
+}
+
+.receipt-payment-amount {
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 1px;
+}
+
+/* ─── Barcode ───────────────────────────────────────────────── */
+.receipt-barcode {
+  display: flex;
+  justify-content: center;
+  margin: 6px 0 2px;
+}
+
+/* ─── Footer ────────────────────────────────────────────────── */
+.receipt-footer {
+  font-size: 9px;
+  color: #777;
+  text-align: center;
+  margin-top: 4px;
+}

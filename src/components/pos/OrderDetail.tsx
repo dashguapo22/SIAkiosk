@@ -147,7 +147,10 @@ export function OrderDetail({ order, onClose }: OrderDetailProps) {
         cashierName: displayName,
       });
 
-      toast.success(`Payment received for Order #${order.order_number}`);
+      toast.success(`Payment received for Order #${order.order_number}`,{
+        duration: 2000,
+
+      });
       setPosReceiptData({
         orderNumber: order.order_number,
         employee: displayName,

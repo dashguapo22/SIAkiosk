@@ -7,10 +7,11 @@ import { OrderCard } from '@/components/pos/OrderCard';
 import { OrderDetail } from '@/components/pos/OrderDetail';
 import { SalesSummary } from '@/components/pos/SalesSummary';
 import { MenuManagement } from '@/components/pos/MenuManagement';
+import { HistorySummary} from '@/components/pos/HistorySummary';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Coffee, LogOut, RefreshCw, Loader2, ClipboardList, DollarSign, Settings, Search } from 'lucide-react';
+import { Coffee, LogOut, RefreshCw, Loader2, ClipboardList, DollarSign, Settings, Search, History} from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export default function POSPage() {
@@ -134,7 +135,14 @@ export default function POSPage() {
                 Menu
               </TabsTrigger>
             )}
+           {isAdmin && (
+              <TabsTrigger value="history" className="gap-2">
+                <History className="w-4 h-4" />
+                History
+              </TabsTrigger>
+            )}
           </TabsList>
+      
 
           {/* Orders Tab */}
           <TabsContent value="orders">
@@ -251,6 +259,13 @@ export default function POSPage() {
           {isAdmin && (
             <TabsContent value="menu">
               <MenuManagement />
+            </TabsContent>
+          )}
+
+          
+          {isAdmin && (
+            <TabsContent value="history">
+              <HistorySummary />
             </TabsContent>
           )}
         </Tabs>

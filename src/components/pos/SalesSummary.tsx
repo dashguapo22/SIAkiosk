@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DollarSign, ShoppingBag, TrendingUp } from 'lucide-react';
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { BarChart , Bar , CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 export function SalesSummary() {
   const { user } = useAuth();
@@ -69,7 +69,7 @@ export function SalesSummary() {
           </Card>
         ))}
       </div>
-
+          
       <div className="grid gap-6 xl:grid-cols-2">
         <SalesHistoryChart title="Sales Over Time" dataKey="sales" />
         <SalesHistoryChart title="Orders Over Time" dataKey="orders" />
@@ -93,14 +93,14 @@ function SalesHistoryChart({ title, dataKey }: { title: string; dataKey: 'sales'
           <p className="text-sm text-muted-foreground">Loading chart...</p>
         ) : (
           <ResponsiveContainer width="100%" height={320}>
-            <LineChart data={data}>
+            <BarChart data={data}>
               <CartesianGrid stroke="#dbce9f" strokeDasharray="5 5" />
               <XAxis dataKey="day" />
               <YAxis />
               <Tooltip />
               <Legend />
-              <Line type="monotone" dataKey={dataKey} stroke="#d65f0f" strokeWidth={2} />
-            </LineChart>
+              <Bar dataKey={dataKey} fill="#d65f0f"  />
+            </BarChart>
           </ResponsiveContainer>
         )}
       </CardContent>
